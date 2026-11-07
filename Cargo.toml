@@ -1,6 +1,6 @@
 [package]
 name = "topside"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2024"
 rust-version = "1.89"
 description = "Builds and operator gates for agent-driven game development: Syncthing delivery, Telegram gates, T3 Code wake-ups"
@@ -9,7 +9,7 @@ repository = "https://github.com/tapyard/topside"
 readme = "README.md"
 keywords = ["ai-agents", "telegram", "gamedev", "syncthing", "human-in-the-loop"]
 categories = ["command-line-utilities", "development-tools", "game-development"]
-include = ["/src", "/docs", "/README.md", "/LICENSE", "/Cargo.toml", "/Cargo.lock"]
+include = ["/src", "/docs", "/README.md", "/CHANGELOG.md", "/LICENSE", "/Cargo.toml", "/Cargo.lock"]
 
 [dependencies]
 anyhow = "1.0.104"

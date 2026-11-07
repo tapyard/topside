@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.4
+
+- The crate package includes this changelog.
+
 ## 0.1.3
 
 - The repository moved to [github.com/tapyard/topside](https://github.com/tapyard/topside).
