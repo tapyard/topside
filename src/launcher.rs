@@ -428,7 +428,7 @@ pub fn install(ctx: &Ctx) -> Result<u8> {
     let exe = std::env::current_exe()?;
     let cwd = std::env::current_dir()?;
     let home = PathBuf::from(std::env::var_os("HOME").context("HOME is not set")?);
-    let label = "com.dzamataev.topside-launcher";
+    let label = "com.tapyard.topside-launcher";
     let plist = home
         .join("Library/LaunchAgents")
         .join(format!("{label}.plist"));

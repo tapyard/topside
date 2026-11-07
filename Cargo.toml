@@ -1,11 +1,11 @@
 [package]
 name = "topside"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2024"
 rust-version = "1.89"
 description = "Builds and operator gates for agent-driven game development: Syncthing delivery, Telegram gates, T3 Code wake-ups"
 license = "MIT"
-repository = "https://github.com/DZamataev/topside"
+repository = "https://github.com/tapyard/topside"
 readme = "README.md"
 keywords = ["ai-agents", "telegram", "gamedev", "syncthing", "human-in-the-loop"]
 categories = ["command-line-utilities", "development-tools", "game-development"]

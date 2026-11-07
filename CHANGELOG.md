@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.3
+
+- The repository moved to [github.com/tapyard/topside](https://github.com/tapyard/topside).
+- The macOS LaunchAgent of the launcher is `com.tapyard.topside-launcher`. If an
+  older one is installed, remove it first:
+  `launchctl bootout gui/$(id -u)/com.dzamataev.topside-launcher` and delete
+  `~/Library/LaunchAgents/com.dzamataev.topside-launcher.plist`.
+
 ## 0.1.2
 
 - Refreshing the build folder's manifests no longer gives up when the publish
