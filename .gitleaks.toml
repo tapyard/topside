@@ -1,0 +1,58 @@
+# gitleaks configuration for topside: the default secret rules, plus rules for
+# details of a private setup that must not reach a public repository.
+#
+#   gitleaks dir --redact .     # the working tree
+#   gitleaks git --redact       # the history
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "gitlab-link"
+description = "A link to a GitLab repository: the public project lives on GitHub; GitLab ones are private"
+regex = '''(?i)gitlab\.com[:/][a-z0-9_.-]+'''
+keywords = ["gitlab.com"]
+
+[[rules]]
+id = "home-path"
+description = "An absolute path inside a real home folder (use ~ or /home/me in examples)"
+# The secret is the path without its first slash: the default global allowlist
+# lets through anything that starts with /home/ or looks like /Users/x/y.
+regex = '''/((?:Users|home)/[A-Za-z0-9_.-]+)'''
+secretGroup = 1
+keywords = ["/users/", "/home/"]
+[[rules.allowlists]]
+regexes = ['''^(?:Users|home)/(?:me|you|user|runner|example)$''']
+
+[[rules]]
+id = "telegram-chat-id"
+description = "A real Telegram supergroup id (examples use -1001234567890)"
+regex = '''-100\d{10}\b'''
+keywords = ["-100"]
+[[rules.allowlists]]
+regexes = ['''-1001234567890''']
+
+[[rules]]
+id = "private-ip"
+description = "An address in a private network"
+regex = '''\b(?:192\.168|10\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01]))\.\d{1,3}\.\d{1,3}\b'''
+keywords = ["192.168.", "10.", "172."]
+
+[[rules]]
+id = "public-ip"
+description = "A literal IPv4 address other than loopback and the unspecified one"
+regex = '''\b(?:\d{1,3}\.){3}\d{1,3}\b'''
+[[rules.allowlists]]
+regexes = ['''\b(?:127\.0\.0\.1|0\.0\.0\.0)\b''']
+
+[[rules]]
+id = "email"
+description = "An e-mail address"
+regex = '''[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\.[A-Za-z0-9.-]*[A-Za-z]'''
+keywords = ["@"]
+[[rules.allowlists]]
+regexes = ['''@example\.(?:com|org)\b''', '''\bgit@github\.com\b''']
+
+[[allowlists]]
+description = "Build output (not in git) and the gitleaks configurations, which name what they look for"
+paths = ['''^target/''', '''(?:^|/)\.gitleaks(?:-private)?\.toml$''']

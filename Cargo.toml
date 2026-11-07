@@ -1,0 +1,34 @@
+[package]
+name = "topside"
+version = "0.1.1"
+edition = "2024"
+rust-version = "1.89"
+description = "Builds and operator gates for agent-driven game development: Syncthing delivery, Telegram gates, T3 Code wake-ups"
+license = "MIT"
+repository = "https://github.com/DZamataev/topside"
+readme = "README.md"
+keywords = ["ai-agents", "telegram", "gamedev", "syncthing", "human-in-the-loop"]
+categories = ["command-line-utilities", "development-tools", "game-development"]
+include = ["/src", "/docs", "/README.md", "/LICENSE", "/Cargo.toml", "/Cargo.lock"]
+
+[dependencies]
+anyhow = "1.0.104"
+chrono = "0.4.45"
+clap = { version = "4.6.7", features = ["derive"] }
+hmac = "0.13.0"
+rusqlite = { version = "0.41.1", features = ["bundled"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+sha2 = "0.11.1"
+toml = "1.2.1"
+ureq = { version = "3.5.1", features = ["json", "socks-proxy"] }
+
+[dev-dependencies]
+tempfile = "3.27.0"
+
+[profile.release]
+strip = true
+lto = "thin"
+
+[target."cfg(unix)".dependencies]
+libc = "0.2.191"
