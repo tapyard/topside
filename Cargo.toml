@@ -1,6 +1,6 @@
 [package]
 name = "topside"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 rust-version = "1.89"
 description = "Builds and operator gates for agent-driven game development: Syncthing delivery, Telegram gates, T3 Code wake-ups"

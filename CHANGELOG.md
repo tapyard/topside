@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+- Refreshing the build folder's manifests no longer gives up when the publish
+  lock only looks taken for a moment after its release (a process being started
+  by another thread still holds a copy of it).
+
 ## 0.1.1
 
 First public release.

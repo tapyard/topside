@@ -192,6 +192,12 @@ fn harmless_hidden(name: &str) -> bool {
     name == ".DS_Store" || name == ".gdignore"
 }
 
+/// How long a lock that is "not waited for" is still tried. A lock is held by
+/// the open file, and a process another thread is starting holds a copy of every
+/// descriptor until it executes its program: just after a release the lock can
+/// look taken for a moment, which must not turn a refresh away.
+const RELEASE_GRACE: Duration = Duration::from_millis(500);
+
 /// Take an exclusive lock on `path`, saying what is awaited; give up after `limit`.
 fn lock_file(path: &Path, what: &str, limit: Duration) -> Result<std::fs::File> {
     let file =
@@ -213,11 +219,17 @@ fn lock_file(path: &Path, what: &str, limit: Duration) -> Result<std::fs::File> 
                 path.display()
             );
         }
-        if !told {
+        let waited = started.elapsed();
+        if !told && limit > RELEASE_GRACE && waited >= RELEASE_GRACE {
             eprintln!("waiting for {what}…");
             told = true;
         }
-        std::thread::sleep(Duration::from_millis(200));
+        // Often at first (a lock that only looks taken frees within milliseconds).
+        std::thread::sleep(if waited < RELEASE_GRACE {
+            Duration::from_millis(10)
+        } else {
+            Duration::from_millis(200)
+        });
     }
 }
 
@@ -733,17 +745,17 @@ pub fn refresh(ctx: &Ctx, db: &Store, project: &str) {
         return;
     }
     // A publish writes them too: one writer at a time, or an older picture could
-    // win. Never waited for (agent commands and the service must not hang on a
-    // publish): when the lock is held, a marker asks its holder to write them
-    // again on release (see `PublishLock`).
+    // win. Never waited for beyond RELEASE_GRACE (agent commands and the service
+    // must not hang on a publish): when the lock is held, a marker asks its holder
+    // to write them again on release (see `PublishLock`).
     let written = (|| -> Result<()> {
-        let _lock = match publish_lock(ctx, project, Duration::ZERO) {
+        let _lock = match publish_lock(ctx, project, RELEASE_GRACE) {
             Ok(lock) => lock,
             Err(_) => {
                 std::fs::write(stale_marker(ctx, project), b"")?;
                 // Tried again after the marker: the holder has either not released
                 // yet (and will see the marker) or has, and the lock is free now.
-                match publish_lock(ctx, project, Duration::ZERO) {
+                match publish_lock(ctx, project, RELEASE_GRACE) {
                     Ok(lock) => lock,
                     Err(_) => return Ok(()),
                 }
@@ -1547,7 +1559,7 @@ mod tests {
         assert!(!stale_marker(&ctx, "p").exists());
         // A marker that cannot be removed (a folder in its place): no endless redo.
         std::fs::create_dir_all(stale_marker(&ctx, "p")).unwrap();
-        let held = publish_lock(&ctx, "p", Duration::ZERO).unwrap();
+        let held = publish_lock(&ctx, "p", RELEASE_GRACE).unwrap();
         drop(held);
     }
 
